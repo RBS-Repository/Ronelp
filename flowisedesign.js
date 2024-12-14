@@ -238,41 +238,59 @@ const flowiseConfig = {
 function preventChatClose() {
     const chatContainer = document.querySelector('.chatbot-container');
     const chatInput = document.querySelector('.chat-input');
+    const messagesContainer = document.querySelector('.messages-container');
     
     if (chatContainer && chatInput) {
-        // Prevent chat from closing when input is focused
+        // Handle input focus
         chatInput.addEventListener('focus', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            chatContainer.style.display = 'flex';
-            chatContainer.style.visibility = 'visible';
-            chatContainer.style.opacity = '1';
             
-            // Add fixed positioning when keyboard is open
-            chatContainer.style.position = 'fixed';
-            chatContainer.style.top = '0';
-            chatContainer.style.left = '0';
-            chatContainer.style.right = '0';
-            chatContainer.style.bottom = '0';
-            chatContainer.style.height = '100%';
-            chatContainer.style.maxHeight = '100vh';
-            chatContainer.style.zIndex = '999999';
+            // Add class for keyboard open state
+            document.body.classList.add('keyboard-open');
+            chatContainer.classList.add('keyboard-open');
             
-            // Scroll to input
+            // Adjust container for keyboard
             setTimeout(() => {
-                chatInput.scrollIntoView({ behavior: 'smooth' });
+                const keyboardHeight = window.innerHeight - window.visualViewport.height;
+                chatInput.style.position = 'fixed';
+                chatInput.style.bottom = `${keyboardHeight}px`;
+                
+                // Adjust messages container
+                if (messagesContainer) {
+                    messagesContainer.style.paddingBottom = `${keyboardHeight + 60}px`;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
             }, 100);
-        }, true);
+        });
 
-        // Prevent default behavior that might cause closing
-        chatContainer.addEventListener('touchstart', (e) => e.stopPropagation(), true);
-        chatContainer.addEventListener('touchmove', (e) => e.stopPropagation(), true);
-        chatContainer.addEventListener('touchend', (e) => e.stopPropagation(), true);
-        
-        // Prevent closing on any click within the container
-        chatContainer.addEventListener('click', (e) => {
-            e.stopPropagation();
-        }, true);
+        // Handle input blur
+        chatInput.addEventListener('blur', () => {
+            document.body.classList.remove('keyboard-open');
+            chatContainer.classList.remove('keyboard-open');
+            chatInput.style.position = 'sticky';
+            chatInput.style.bottom = '0';
+            
+            if (messagesContainer) {
+                messagesContainer.style.paddingBottom = '60px';
+            }
+        });
+
+        // Add visual viewport handling for iOS
+        if ('visualViewport' in window) {
+            window.visualViewport.addEventListener('resize', () => {
+                if (document.activeElement === chatInput) {
+                    const keyboardHeight = window.innerHeight - window.visualViewport.height;
+                    chatInput.style.position = 'fixed';
+                    chatInput.style.bottom = `${keyboardHeight}px`;
+                    
+                    if (messagesContainer) {
+                        messagesContainer.style.paddingBottom = `${keyboardHeight + 60}px`;
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    }
+                }
+            });
+        }
     }
 }
 
@@ -663,4 +681,35 @@ function preserveChatState(action) {
             }
         }, 100);
     }
+}
+
+// Add these styles to your existing mobile styles
+const additionalMobileStyles = `
+    .chatbot-container.keyboard-open {
+        height: 100% !important;
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    .keyboard-open .chat-input {
+        background: white !important;
+        border-top: 1px solid #DBDBDB !important;
+        padding: 10px 15px !important;
+        margin: 0 !important;
+        transition: bottom 0.3s !important;
+    }
+
+    .keyboard-open .messages-container {
+        padding-bottom: var(--keyboard-height, 60px) !important;
+    }
+`;
+
+// Add the styles to your existing style injection
+if (isMobile()) {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = additionalMobileStyles;
+    document.head.appendChild(styleElement);
 }
