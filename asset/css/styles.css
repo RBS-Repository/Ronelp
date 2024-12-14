@@ -2567,3 +2567,10 @@ html, body {
         padding-bottom: calc(1rem + env(safe-area-inset-bottom));
     }
 }
+
+/* Update cursor styles for mobile */
+@media (max-width: 768px) {
+    .cursor, .cursor-follower {
+        display: none !important;
+    }
+}

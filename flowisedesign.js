@@ -332,46 +332,112 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         if (isMobile()) {
-            // Prevent scrolling on body when chat is open
-            const preventBodyScroll = (e) => {
-                if (document.querySelector('.chatbot-container')) {
-                    e.preventDefault();
+            // Add viewport meta tag for better mobile handling
+            const meta = document.createElement('meta');
+            meta.name = 'viewport';
+            meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+            document.getElementsByTagName('head')[0].appendChild(meta);
+
+            // Update chatWindow configuration for mobile
+            flowiseConfig.theme.chatWindow = {
+                ...flowiseConfig.theme.chatWindow,
+                height: '100vh',
+                width: '100%',
+                position: 'fixed',
+                bottom: 0,
+                right: 0,
+                borderRadius: '0',
+                textInput: {
+                    ...flowiseConfig.theme.chatWindow.textInput,
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 10000,
+                    style: {
+                        position: 'sticky',
+                        bottom: 0,
+                        width: '100%',
+                        boxSizing: 'border-box'
+                    }
                 }
             };
 
-            // Handle input focus
-            document.addEventListener('focus', (e) => {
-                if (e.target.classList.contains('chat-input')) {
-                    // Delay to let keyboard appear
-                    setTimeout(() => {
-                        const container = document.querySelector('.chatbot-container');
-                        if (container) {
-                            container.style.height = '100%';
-                            container.style.top = '0';
-                            e.target.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }, 300);
-                }
-            }, true);
+            // Add mobile-specific event handlers
+            document.addEventListener('DOMContentLoaded', () => {
+                const originalHeight = window.innerHeight;
+                
+                window.addEventListener('resize', () => {
+                    const chatContainer = document.querySelector('.chatbot-container');
+                    if (!chatContainer) return;
 
-            // Handle viewport resize on keyboard show/hide
-            let viewportHeight = window.innerHeight;
-            window.addEventListener('resize', () => {
-                if (window.innerHeight < viewportHeight) {
-                    // Keyboard is showing
-                    const container = document.querySelector('.chatbot-container');
-                    if (container) {
-                        container.style.height = '100%';
-                        container.style.top = '0';
+                    if (window.innerHeight < originalHeight) {
+                        // Keyboard is shown
+                        chatContainer.style.height = '100vh';
+                        chatContainer.style.position = 'fixed';
+                        chatContainer.style.top = '0';
+                        chatContainer.style.bottom = '0';
+                        chatContainer.style.left = '0';
+                        chatContainer.style.right = '0';
+                        chatContainer.style.zIndex = '99999';
+                        
+                        // Prevent body scroll
+                        document.body.style.position = 'fixed';
+                        document.body.style.width = '100%';
+                    } else {
+                        // Keyboard is hidden
+                        chatContainer.style.height = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
                     }
+                });
+
+                // Handle input focus
+                document.addEventListener('focus', (e) => {
+                    if (e.target.classList.contains('chat-input')) {
+                        setTimeout(() => {
+                            e.target.scrollIntoView({ behavior: 'smooth' });
+                        }, 300);
+                    }
+                }, true);
+
+                // Prevent closing on touch events
+                const chatContainer = document.querySelector('.chatbot-container');
+                if (chatContainer) {
+                    chatContainer.addEventListener('touchmove', (e) => {
+                        e.stopPropagation();
+                    }, { passive: true });
                 }
-                viewportHeight = window.innerHeight;
             });
 
-            // Prevent unwanted body scrolling
-            document.body.addEventListener('touchmove', preventBodyScroll, { 
-                passive: false 
-            });
+            // Add these styles to prevent unwanted scrolling
+            const style = document.createElement('style');
+            style.textContent = `
+                .chatbot-container {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    width: 100% !important;
+                    height: 100vh !important;
+                    max-height: none !important;
+                    border-radius: 0 !important;
+                    z-index: 99999 !important;
+                    transform: none !important;
+                }
+                
+                .chatbot-container.active {
+                    display: flex !important;
+                }
+
+                .chat-input {
+                    position: sticky !important;
+                    bottom: 0 !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    z-index: 100000 !important;
+                }
+            `;
+            document.head.appendChild(style);
         }
     }
 });
