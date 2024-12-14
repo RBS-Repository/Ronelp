@@ -241,7 +241,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             // Array of messages to rotate through
             const messages = [
-                "Ask me!",
+                "Ask meeee!",
                 "Need specific info?",
                 "Click here!",
                 "Let's chat!"
