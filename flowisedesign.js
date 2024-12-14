@@ -239,6 +239,7 @@ function preventChatClose() {
     const chatContainer = document.querySelector('.chatbot-container');
     const chatInput = document.querySelector('.chat-input');
     const messagesContainer = document.querySelector('.messages-container');
+    const header = chatContainer?.querySelector('.chat-header');
     
     if (chatContainer && chatInput) {
         // Handle input focus
@@ -253,13 +254,27 @@ function preventChatClose() {
             // Adjust container for keyboard
             setTimeout(() => {
                 const keyboardHeight = window.innerHeight - window.visualViewport.height;
+                const headerHeight = header?.offsetHeight || 0;
+                
+                // Adjust container height to show both header and input
+                chatContainer.style.height = `${window.visualViewport.height}px`;
+                
+                // Position input above keyboard
                 chatInput.style.position = 'fixed';
                 chatInput.style.bottom = `${keyboardHeight}px`;
                 
                 // Adjust messages container
                 if (messagesContainer) {
+                    messagesContainer.style.height = `calc(100% - ${headerHeight + 60}px)`;
                     messagesContainer.style.paddingBottom = `${keyboardHeight + 60}px`;
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+
+                // Keep header visible
+                if (header) {
+                    header.style.position = 'sticky';
+                    header.style.top = '0';
+                    header.style.zIndex = '100001';
                 }
             }, 100);
         });
@@ -268,29 +283,20 @@ function preventChatClose() {
         chatInput.addEventListener('blur', () => {
             document.body.classList.remove('keyboard-open');
             chatContainer.classList.remove('keyboard-open');
+            chatContainer.style.height = '100vh';
             chatInput.style.position = 'sticky';
             chatInput.style.bottom = '0';
             
             if (messagesContainer) {
+                messagesContainer.style.height = '';
                 messagesContainer.style.paddingBottom = '60px';
             }
-        });
 
-        // Add visual viewport handling for iOS
-        if ('visualViewport' in window) {
-            window.visualViewport.addEventListener('resize', () => {
-                if (document.activeElement === chatInput) {
-                    const keyboardHeight = window.innerHeight - window.visualViewport.height;
-                    chatInput.style.position = 'fixed';
-                    chatInput.style.bottom = `${keyboardHeight}px`;
-                    
-                    if (messagesContainer) {
-                        messagesContainer.style.paddingBottom = `${keyboardHeight + 60}px`;
-                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                    }
-                }
-            });
-        }
+            if (header) {
+                header.style.position = '';
+                header.style.top = '';
+            }
+        });
     }
 }
 
@@ -692,6 +698,23 @@ const additionalMobileStyles = `
         bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        transition: height 0.3s !important;
+    }
+
+    .keyboard-open .chat-header {
+        background: white !important;
+        border-bottom: 1px solid #DBDBDB !important;
+        padding: 10px !important;
+        transform: translateZ(0) !important;
+    }
+
+    .keyboard-open .messages-container {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        transform: translateZ(0) !important;
     }
 
     .keyboard-open .chat-input {
@@ -700,10 +723,7 @@ const additionalMobileStyles = `
         padding: 10px 15px !important;
         margin: 0 !important;
         transition: bottom 0.3s !important;
-    }
-
-    .keyboard-open .messages-container {
-        padding-bottom: var(--keyboard-height, 60px) !important;
+        transform: translateZ(0) !important;
     }
 `;
 
