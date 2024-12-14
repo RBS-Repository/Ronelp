@@ -1,0 +1,112 @@
+Name: Ronel Pantonial
+Role: 4th year BSIT student
+Location: Philippines
+
+About:
+- 4th year BSIT student passionate about web development
+- Specializes in building exceptional digital experiences
+- Combines creativity and problem-solving
+- Strong foundation in web development and design
+
+Education:
+- Bachelor of Science in Information Technology (2020 - Present)
+
+Technical Skills:
+- HTML/CSS (90%)
+- JavaScript (85%)
+- UI/UX Design (85%)
+- Figma (80%)
+- Node.js
+
+Other Skills:
+- Problem Solving (90%)
+- Team Leadership (85%)
+
+Projects:
+1. Waste Management System
+- Platform for streamlining waste collection, processing, and disposal operations
+
+2. Computer Sit-In Monitoring System
+- System for monitoring and managing computer usage in shared environments
+
+3. Smart Health Project
+- (Details not specified in original content)
+
+Experience:
+- Tech Innovation Camp Leader (2023)
+- Youth Leadership Camp Participant (2022)
+- Advanced Leadership Program (2023)
+- Student Leadership Summit (2021)
+- Youth Group Leader (2022 - Present)
+- Ministry Training Program (2021)
+
+Contact Information:
+- Email: ronelpantonial@gmail.com
+- Phone: +63 912 345 6789
+- Location: Philippines
+
+Professional Summary:
+A passionate 4th year BSIT student who transforms ideas into reality through creative development and innovative solutions. Combines technical expertise with leadership skills and community involvement.
+
+Achievements:
+- 10+ Projects Completed
+- 2+ Years Experience
+
+
+About Ronel B. Pantonial
+
+I am Ronel B. Pantonial, a 22-year-old IT student at the University of Cebu – Main Campus, passionate about web development, database management, and IoT. I've been an active scholar since grade 2, and through my involvement in community and church activities, I’ve developed strong leadership and teamwork skills. With a driven and resilient mindset, I am always looking for opportunities to apply my technical knowledge and grow professionally in the IT field.
+
+Education
+
+Bachelor of Science in Information Technology (BSIT)
+University of Cebu – Main Campus
+2021 - Present
+
+Senior High School (TVL-ICT)
+University of Cebu – Senior High
+2019 - 2021
+
+Skills
+
+Programming Languages: PHP, Java
+Web Development: HTML, CSS, JavaScript, W3.CSS
+Database Management: MySQL
+Tools: Visual Studio Code
+Soft Skills: Teamwork, Leadership
+Certifications
+
+Networking Essentials (April 15, 2019 – June 09, 2019)
+Entrepreneurship (July 2024 – December 2024)
+Housekeeping (Summer 2019)
+Experience
+
+Housekeeping Staff
+Gaisano Main/Gaisano Bros. Merchandise Inc.
+Summer 2019
+My first official job, where I gained skills in responsibility, time management, and hard work within a retail environment.
+
+System Analyst/Database Manager
+Capstone Project: BinBetter
+July 2024 – November 2024
+Led the database management for a platform designed to promote efficient waste management, incentivize recycling, and connect communities through a rewards system.
+
+System Developer
+SysArch Project: Sit-In Monitoring System
+January 2024 – May 2024
+Developed a system to track and manage sit-in requests for laboratory usage, ensuring real-time monitoring and efficient management of laboratory access.
+
+Achievements & References
+
+Consistent Honor Student (2015–2019)
+University of Cebu – College of Computer Studies
+Dean’s Lister (2022–2023)
+Vice President – UC CCSCares
+Leah B. Ybanez | Teacher | 09292393001
+Damaris D. Bacalso | Formator | 09218840001
+Saint John Scholarship Program
+Contact
+
+Phone: 09935828020
+Email: ronelpantonial24@gmail.com
+Location: San Roque, Banawa, Cebu City
