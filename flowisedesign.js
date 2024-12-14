@@ -59,11 +59,13 @@ const flowiseConfig = {
                 boxShadow: "none",
                 padding: "12px 16px",
                 margin: "10px",
-                position: "sticky",
+                position: "fixed",
                 bottom: "0",
                 maxHeight: "100px",
                 overflowY: "auto",
                 zIndex: "1000",
+                focusKeepOpen: true,
+                preventClose: true
             }
         },
         chatflowConfig: {
@@ -107,6 +109,8 @@ const flowiseConfig = {
                 border-top: 1px solid #DBDBDB;
                 border-radius: 0 0 12px 12px;
                 z-index: 1000;
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
             `,
             chatContainer: `
                 display: flex;
@@ -114,6 +118,7 @@ const flowiseConfig = {
                 height: calc(100% - 80px);
                 position: relative;
                 overflow: hidden;
+                -webkit-overflow-scrolling: touch;
             `,
             messagesContainer: `
                 flex: 1;
@@ -180,6 +185,17 @@ const flowiseConfig = {
                 font-weight: 500;
                 pointer-events: none;
                 z-index: 1001;
+            `,
+            '.chatbot-container': `
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+            `,
+            'body.chat-open': `
+                position: fixed;
+                width: 100%;
+                height: 100%;
             `
         }
     }
@@ -263,6 +279,32 @@ window.addEventListener('DOMContentLoaded', () => {
             }, 1000); // Wait 2 seconds before starting rotation
 
         }, 1000); // Initial delay to ensure chat button is loaded
+
+        // Handle chat input focus
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('chat-input')) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Prevent closing chat when input is focused
+                const chatContainer = document.querySelector('.chatbot-container');
+                if (chatContainer) {
+                    chatContainer.style.display = 'flex';
+                    // Scroll to input after a short delay
+                    setTimeout(() => {
+                        e.target.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        }, true);
+
+        // Prevent iOS keyboard issues
+        if (isMobile()) {
+            const viewport = document.querySelector('meta[name=viewport]');
+            if (viewport) {
+                viewport.content = 'width=device-width, initial-scale=1, maximum-scale=1';
+            }
+        }
     }
 });
 
