@@ -67,8 +67,16 @@ const flowiseConfig = {
                 focusKeepOpen: true,
                 preventClose: true,
                 style: {
-                    position: 'sticky',
+                    position: 'fixed',
                     bottom: 0,
+                    left: 0,
+                    right: 0,
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    zIndex: 1000000,
+                    background: 'white',
+                    padding: '10px',
+                    margin: 0,
                 }
             }
         },
@@ -225,6 +233,48 @@ const flowiseConfig = {
         }
     }
 };
+
+// Add this function at the top level
+function preventChatClose() {
+    const chatContainer = document.querySelector('.chatbot-container');
+    const chatInput = document.querySelector('.chat-input');
+    
+    if (chatContainer && chatInput) {
+        // Prevent chat from closing when input is focused
+        chatInput.addEventListener('focus', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chatContainer.style.display = 'flex';
+            chatContainer.style.visibility = 'visible';
+            chatContainer.style.opacity = '1';
+            
+            // Add fixed positioning when keyboard is open
+            chatContainer.style.position = 'fixed';
+            chatContainer.style.top = '0';
+            chatContainer.style.left = '0';
+            chatContainer.style.right = '0';
+            chatContainer.style.bottom = '0';
+            chatContainer.style.height = '100%';
+            chatContainer.style.maxHeight = '100vh';
+            chatContainer.style.zIndex = '999999';
+            
+            // Scroll to input
+            setTimeout(() => {
+                chatInput.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }, true);
+
+        // Prevent default behavior that might cause closing
+        chatContainer.addEventListener('touchstart', (e) => e.stopPropagation(), true);
+        chatContainer.addEventListener('touchmove', (e) => e.stopPropagation(), true);
+        chatContainer.addEventListener('touchend', (e) => e.stopPropagation(), true);
+        
+        // Prevent closing on any click within the container
+        chatContainer.addEventListener('click', (e) => {
+            e.stopPropagation();
+        }, true);
+    }
+}
 
 // Initialize Flowise with configuration
 window.addEventListener('DOMContentLoaded', () => {
@@ -438,13 +488,179 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             `;
             document.head.appendChild(style);
+
+            // Add these styles to the existing style element
+            const additionalStyles = `
+                .chatbot-container {
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    width: 100% !important;
+                    height: 100vh !important;
+                    max-height: none !important;
+                    border-radius: 0 !important;
+                    z-index: 999999 !important;
+                    transform: none !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    transition: none !important;
+                }
+                
+                .chat-input {
+                    position: fixed !important;
+                    bottom: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    z-index: 1000000 !important;
+                    background: white !important;
+                    padding: 10px !important;
+                    margin: 0 !important;
+                }
+                
+                .messages-container {
+                    flex: 1 !important;
+                    overflow-y: auto !important;
+                    padding-bottom: 60px !important;
+                    -webkit-overflow-scrolling: touch !important;
+                }
+            `;
+
+            // Add the styles to the document
+            const styleElement = document.createElement('style');
+            styleElement.textContent = additionalStyles;
+            document.head.appendChild(styleElement);
+
+            // Call preventChatClose after a short delay to ensure elements are loaded
+            setTimeout(preventChatClose, 1000);
+
+            // Add event listener for visibility changes
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    // Reapply the prevention when page becomes visible
+                    preventChatClose();
+                }
+            });
         }
     }
 });
 
-// Handle window resize
+// Update the resize handler
 window.addEventListener('resize', () => {
     if (window.Chatbot) {
-        window.Chatbot.init(flowiseConfig);
+        const chatContainer = document.querySelector('.chatbot-container');
+        if (!chatContainer) return;
+
+        const isActive = chatContainer.classList.contains('active');
+        
+        // Preserve chat state
+        const messages = chatContainer.querySelector('.messages-container')?.innerHTML || '';
+        const inputValue = chatContainer.querySelector('.chat-input')?.value || '';
+
+        // Update container styles based on screen size
+        if (isMobile()) {
+            chatContainer.style.width = '100%';
+            chatContainer.style.height = '100vh';
+            chatContainer.style.maxHeight = '100vh';
+            chatContainer.style.position = 'fixed';
+            chatContainer.style.top = '0';
+            chatContainer.style.left = '0';
+            chatContainer.style.right = '0';
+            chatContainer.style.bottom = '0';
+            chatContainer.style.margin = '0';
+            chatContainer.style.borderRadius = '0';
+        } else {
+            chatContainer.style.width = '400px';
+            chatContainer.style.height = '560px';
+            chatContainer.style.position = 'fixed';
+            chatContainer.style.right = '25px';
+            chatContainer.style.bottom = '25px';
+            chatContainer.style.borderRadius = '12px';
+        }
+
+        // Keep chat open if it was open
+        if (isActive) {
+            chatContainer.style.display = 'flex';
+            chatContainer.classList.add('active');
+            
+            // Restore messages
+            const messagesContainer = chatContainer.querySelector('.messages-container');
+            if (messagesContainer && messages) {
+                messagesContainer.innerHTML = messages;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Restore input value
+            const input = chatContainer.querySelector('.chat-input');
+            if (input) {
+                input.value = inputValue;
+            }
+        }
+
+        // Add these styles to ensure proper display
+        const style = document.createElement('style');
+        style.textContent = `
+            .chatbot-container.active {
+                display: flex !important;
+                flex-direction: column !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                z-index: 999999 !important;
+            }
+
+            .chat-input {
+                position: sticky !important;
+                bottom: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                background: white !important;
+                padding: 10px !important;
+                margin: 0 !important;
+                z-index: 1000000 !important;
+            }
+
+            .messages-container {
+                flex: 1 !important;
+                overflow-y: auto !important;
+                padding-bottom: 60px !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Reapply mobile fixes if needed
+        if (isMobile()) {
+            preventChatClose();
+        }
     }
 });
+
+// Add this helper function to maintain chat state
+function preserveChatState(action) {
+    const chatContainer = document.querySelector('.chatbot-container');
+    if (!chatContainer) return;
+
+    const isActive = chatContainer.classList.contains('active');
+    const messages = document.querySelector('.messages-container')?.innerHTML || '';
+
+    action();
+
+    if (isActive) {
+        setTimeout(() => {
+            const newContainer = document.querySelector('.chatbot-container');
+            if (newContainer) {
+                newContainer.classList.add('active');
+                newContainer.style.display = 'flex';
+                const messagesContainer = newContainer.querySelector('.messages-container');
+                if (messagesContainer && messages) {
+                    messagesContainer.innerHTML = messages;
+                }
+            }
+        }, 100);
+    }
+}
