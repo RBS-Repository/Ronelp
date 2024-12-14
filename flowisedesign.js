@@ -63,9 +63,13 @@ const flowiseConfig = {
                 bottom: "0",
                 maxHeight: "100px",
                 overflowY: "auto",
-                zIndex: "1000",
+                zIndex: "9999",
                 focusKeepOpen: true,
-                preventClose: true
+                preventClose: true,
+                style: {
+                    position: 'sticky',
+                    bottom: 0,
+                }
             }
         },
         chatflowConfig: {
@@ -115,10 +119,14 @@ const flowiseConfig = {
             chatContainer: `
                 display: flex;
                 flex-direction: column;
-                height: calc(100% - 80px);
-                position: relative;
+                height: 100% !important;
+                max-height: 100% !important;
+                position: fixed !important;
                 overflow: hidden;
                 -webkit-overflow-scrolling: touch;
+                bottom: 0;
+                transform: translateZ(0);
+                -webkit-transform: translateZ(0);
             `,
             messagesContainer: `
                 flex: 1;
@@ -187,8 +195,12 @@ const flowiseConfig = {
                 z-index: 1001;
             `,
             '.chatbot-container': `
-                -webkit-transform: translateZ(0);
+                position: fixed !important;
+                bottom: 0 !important;
+                height: 100% !important;
+                max-height: 100vh !important;
                 transform: translateZ(0);
+                -webkit-transform: translateZ(0);
                 -webkit-backface-visibility: hidden;
                 backface-visibility: hidden;
             `,
@@ -196,6 +208,19 @@ const flowiseConfig = {
                 position: fixed;
                 width: 100%;
                 height: 100%;
+            `,
+            '.chat-input-wrapper': `
+                position: sticky !important;
+                bottom: 0 !important;
+                background: white;
+                padding: 10px;
+                z-index: 9999;
+            `,
+            '.messages-container': `
+                flex: 1;
+                overflow-y: auto;
+                padding-bottom: 60px;
+                -webkit-overflow-scrolling: touch;
             `
         }
     }
@@ -304,6 +329,49 @@ window.addEventListener('DOMContentLoaded', () => {
             if (viewport) {
                 viewport.content = 'width=device-width, initial-scale=1, maximum-scale=1';
             }
+        }
+
+        if (isMobile()) {
+            // Prevent scrolling on body when chat is open
+            const preventBodyScroll = (e) => {
+                if (document.querySelector('.chatbot-container')) {
+                    e.preventDefault();
+                }
+            };
+
+            // Handle input focus
+            document.addEventListener('focus', (e) => {
+                if (e.target.classList.contains('chat-input')) {
+                    // Delay to let keyboard appear
+                    setTimeout(() => {
+                        const container = document.querySelector('.chatbot-container');
+                        if (container) {
+                            container.style.height = '100%';
+                            container.style.top = '0';
+                            e.target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }, 300);
+                }
+            }, true);
+
+            // Handle viewport resize on keyboard show/hide
+            let viewportHeight = window.innerHeight;
+            window.addEventListener('resize', () => {
+                if (window.innerHeight < viewportHeight) {
+                    // Keyboard is showing
+                    const container = document.querySelector('.chatbot-container');
+                    if (container) {
+                        container.style.height = '100%';
+                        container.style.top = '0';
+                    }
+                }
+                viewportHeight = window.innerHeight;
+            });
+
+            // Prevent unwanted body scrolling
+            document.body.addEventListener('touchmove', preventBodyScroll, { 
+                passive: false 
+            });
         }
     }
 });
